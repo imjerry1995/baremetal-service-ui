@@ -16,7 +16,7 @@
   "postCreateCommand": "npm install",
   "mounts": [
     "source=${localEnv:USERPROFILE}/.claude,target=/home/vscode/.claude,type=bind",
-    "source=${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,readonly"
+    "source=${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,type=bind,readonly"
   ],
   "containerEnv": {
     "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
