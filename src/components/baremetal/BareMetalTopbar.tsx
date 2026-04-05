@@ -36,7 +36,10 @@ export default function BareMetalTopbar({
         className="h-8 px-2 pr-7 text-xs border border-gray-200 rounded-lg outline-none focus:border-blue-400 text-gray-600 bg-white appearance-none cursor-pointer shrink-0"
       >
         <option value="">All Pool</option>
-        <option value="F14">F14</option>
+        <option value="F12">F12</option>
+        <option value="F14">F12</option>
+        <option value="F15">F15</option>
+        <option value="F18">F18</option>
         <option value="F23">F23</option>
       </select>
 

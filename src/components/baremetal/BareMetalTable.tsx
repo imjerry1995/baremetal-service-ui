@@ -5,15 +5,18 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   flexRender,
   SortingState,
   ColumnFiltersState,
+  PaginationState,
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { BareMetalHost } from "@/types/bareMetal";
 import { columns } from "./BareMetalTable.columns";
 import BareMetalTopbar from "./BareMetalTopbar";
+import BareMetalPagination from "./BareMetalPagination";
 
 interface BareMetalTableProps {
   hosts: BareMetalHost[];
@@ -23,7 +26,12 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [openFilters, setOpenFilters] = useState<Record<string, boolean>>({});
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0, // 從 0 開始，第一頁是 0
+    pageSize: 50, // 每頁 50 筆
+  });
 
   const table = useReactTable({
     data: hosts,
@@ -31,19 +39,23 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
     globalFilterFn: "includesString", //搜尋的比對方式，includesString 代表只要包含搜尋字串就算符合，不區分大小寫。
     state: {
       sorting,
       columnFilters,
       globalFilter,
+      pagination,
     },
   });
 
   function handleSearch() {
-    table.setGlobalFilter(globalFilter);
+    setGlobalFilter(inputValue); // 按下按鈕才把 inputValue 同步到 globalFilter
+    table.setPageIndex(0); // 搜尋後回到第一頁
   }
 
   function toggleFilter(columnId: string) {
@@ -61,8 +73,8 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
     <div className="flex flex-col h-full">
       <BareMetalTopbar
         totalCount={table.getFilteredRowModel().rows.length}
-        search={globalFilter}
-        onSearchChange={setGlobalFilter}
+        search={inputValue}
+        onSearchChange={setInputValue}
         filterPool={(table.getColumn("pool")?.getFilterValue() as string) ?? ""}
         onFilterPoolChange={(value) =>
           table.getColumn("pool")?.setFilterValue(value || undefined)
@@ -145,7 +157,7 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
             ))}
           </thead>
           <tbody>
-            {table.getFilteredRowModel().rows.length === 0 ? (
+            {table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
@@ -155,7 +167,7 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
                 </td>
               </tr>
             ) : (
-              table.getFilteredRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50 cursor-pointer">
                   {row.getVisibleCells().map((cell) => (
                     <td
@@ -174,6 +186,23 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
           </tbody>
         </table>
       </div>
+
+      {/* 分頁元件*/}
+      <BareMetalPagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        pageSize={table.getState().pagination.pageSize}
+        totalCount={table.getFilteredRowModel().rows.length}
+        canPreviousPage={table.getCanPreviousPage()}
+        canNextPage={table.getCanNextPage()}
+        onFirstPage={() => table.setPageIndex(0)}
+        onPreviousPage={() => table.previousPage()}
+        onNextPage={() => table.nextPage()}
+        onLastPage={() => table.setPageIndex(table.getPageCount() - 1)}
+        onPageSizeChange={(size) => {
+          setPagination({ pageIndex: 0, pageSize: size });
+        }}
+      />
     </div>
   );
 }
