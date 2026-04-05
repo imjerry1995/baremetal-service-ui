@@ -37,6 +37,10 @@ Edit `.env.local` as needed:
 
 > Set `NEXT_PUBLIC_USE_MOCK=true` during local development to use generated mock data without needing the API server running.
 
+> **Note:** `src/lib/mock.ts` is not committed to the repository as it may contain sensitive internal data.
+> You need to create it manually. It should export a `mockHosts: BareMetalHost[]` array.
+> Refer to `src/types/bareMetal.ts` for the expected type definition.
+
 ### 4. Run the development server
 
 ```bash

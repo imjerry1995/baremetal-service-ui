@@ -30,6 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# mock data (may contain sensitive internal info)
+src/lib/mock.ts
+
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
