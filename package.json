@@ -9,7 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@tanstack/react-table": "^8.21.3",
+    "ag-grid-community": "^35.2.0",
+    "ag-grid-react": "^35.2.0",
     "autoprefixer": "^10.4.27",
     "lucide-react": "^1.7.0",
     "next": "16.2.2",

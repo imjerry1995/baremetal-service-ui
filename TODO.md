@@ -16,6 +16,7 @@
 - [x] Sidebar（`src/components/layout/Sidebar.tsx`）
 - [x] BrandIcon（`src/components/icons/BrandIcon.tsx`）
 - [x] 頁面路由結構（`src/app/layout.tsx`）
+- [ ] 換 ui
 
 ### Query 頁面（`src/app/baremetal/query/`）
 
