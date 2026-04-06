@@ -61,7 +61,7 @@ export default function BareMetalTopbar({
         </svg>
         <input
           type="text"
-          placeholder="Search hostname/SN/PO Number/IP/MAC..."
+          placeholder="Search ..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full h-8 pl-7 pr-3 text-xs border border-gray-200 rounded-lg outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 text-gray-900 placeholder:text-gray-400"

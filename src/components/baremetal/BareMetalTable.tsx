@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { BareMetalHost } from "@/types/bareMetal";
 import { createColumnDefs } from "./BareMetalTable.columns";
 import BareMetalTopbar from "./BareMetalTopbar";
-import { ModuleRegistry, AllCommunityModule, ColDef } from "ag-grid-community";
+import BareMetalDrawer from "./BareMetalDrawer";
+import {
+  ModuleRegistry,
+  AllCommunityModule,
+  ColDef,
+  GridApi,
+} from "ag-grid-community";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,6 +30,7 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
   const [search, setSearch] = useState("");
   const [filterPool, setFilterPool] = useState("");
   const [selectedHost, setSelectedHost] = useState<BareMetalHost | null>(null);
+  const gridApiRef = useRef<GridApi | null>(null);
 
   // 若不用 useCallback
   // function handleOpenDrawer(host: BareMetalHost) {
@@ -57,7 +64,9 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
     [hosts, filterPool], //hosts 或 filterPool 改變時才重新計算
   );
 
-  function handleSearch() {}
+  function handleSearch() {
+    gridApiRef.current?.setGridOption("quickFilterText", search);
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -79,25 +88,13 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
             pagination={true}
             paginationPageSize={50}
             paginationPageSizeSelector={[10, 25, 50, 100]}
+            onGridReady={(params) => {
+              gridApiRef.current = params.api;
+            }}
+            enableCellTextSelection={true}
           />
         </div>
-        {/* Drawer 位置，下一步建立 */}
-        {selectedHost && (
-          <div className="w-80 border-l border-gray-200 bg-white p-4 shrink-0">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-gray-900">
-                {selectedHost.name}
-              </span>
-              <button
-                onClick={handleCloseDrawer}
-                className="text-gray-400 hover:text-gray-600 text-lg"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-xs text-gray-400">Drawer 內容即將建立...</p>
-          </div>
-        )}
+        <BareMetalDrawer host={selectedHost} onClose={handleCloseDrawer} />
       </div>
     </div>
   );
