@@ -1,17 +1,13 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { AgGridReact } from "ag-grid-react";
+import { ModuleRegistry, AllCommunityModule, ColDef } from "ag-grid-community";
 import { BareMetalHost } from "@/types/bareMetal";
 import { createColumnDefs } from "./BareMetalTable.columns";
 import BareMetalTopbar from "./BareMetalTopbar";
 import BareMetalDrawer from "./BareMetalDrawer";
-import {
-  ModuleRegistry,
-  AllCommunityModule,
-  ColDef,
-  GridApi,
-} from "ag-grid-community";
+import { useBareMetalGrid } from "@/hooks/useBareMetalGrid";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -27,10 +23,17 @@ const defaultColDef: ColDef = {
 };
 
 export default function BareMetalTable({ hosts }: BareMetalTableProps) {
-  const [search, setSearch] = useState("");
-  const [filterPool, setFilterPool] = useState("");
+  const {
+    search,
+    setSearch,
+    filterPool,
+    setFilterPool,
+    filteredHosts,
+    handleSearch,
+    onGridReady,
+  } = useBareMetalGrid(hosts);
+
   const [selectedHost, setSelectedHost] = useState<BareMetalHost | null>(null);
-  const gridApiRef = useRef<GridApi | null>(null);
 
   // 若不用 useCallback
   // function handleOpenDrawer(host: BareMetalHost) {
@@ -55,19 +58,6 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
   // 如果不用 useMemo，每次渲染都重新建立，AG Grid 會以為欄位設定改變了，跟著重新渲染整個表格。
   // 用 useMemo 之後，只有 handleOpenDrawer 改變時才重新建立。
 
-  const filteredHosts = useMemo(
-    () =>
-      hosts.filter((h) => {
-        if (filterPool && h.pool !== filterPool) return false;
-        return true;
-      }),
-    [hosts, filterPool], //hosts 或 filterPool 改變時才重新計算
-  );
-
-  function handleSearch() {
-    gridApiRef.current?.setGridOption("quickFilterText", search);
-  }
-
   return (
     <div className="flex flex-col h-full">
       <BareMetalTopbar
@@ -88,9 +78,7 @@ export default function BareMetalTable({ hosts }: BareMetalTableProps) {
             pagination={true}
             paginationPageSize={50}
             paginationPageSizeSelector={[10, 25, 50, 100]}
-            onGridReady={(params) => {
-              gridApiRef.current = params.api;
-            }}
+            onGridReady={onGridReady}
             enableCellTextSelection={true}
           />
         </div>

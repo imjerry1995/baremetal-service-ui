@@ -1,4 +1,4 @@
-import BareMetalTable from "@/components/baremetal/BareMetalTable";
+import BareMetalUpdateTable from "@/components/baremetal/BareMetalUpdateTable";
 import { fetchBareMetalHosts } from "@/lib/api";
 import { mockHosts } from "@/lib/mock";
 import { BareMetalHost } from "@/types/bareMetal";
@@ -19,7 +19,7 @@ export default async function QueryPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <BareMetalTable hosts={hosts} />
+      <BareMetalUpdateTable hosts={hosts} />
     </div>
   );
 }
